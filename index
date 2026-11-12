@@ -1,0 +1,617 @@
+<!DOCTYPE html>
+<html lang="id" class="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Job Application Tracker - PUNYA OLAN</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: { sans: ['Plus Jakarta Sans', 'sans-serif'] },
+          colors: { dark: { bg: '#0B0F17', card: '#111827', surface: '#1E293B', border: '#334155' } }
+        }
+      }
+    }
+  </script>
+
+  <style>
+    ::-webkit-scrollbar { width: 6px; height: 6px; }
+    ::-webkit-scrollbar-track { background: #0B0F17; }
+    ::-webkit-scrollbar-thumb { background: #334155; border-radius: 9999px; }
+    .glass-card {
+      background: rgba(17, 24, 39, 0.7);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+    .glass-card-hover:hover { border-color: rgba(59, 130, 246, 0.4); box-shadow: 0 8px 25px -5px rgba(59, 130, 246, 0.15); }
+    .glow-blue { box-shadow: 0 0 15px rgba(59, 130, 246, 0.35); }
+    .glow-cyan { box-shadow: 0 0 15px rgba(6, 182, 212, 0.35); }
+    .glow-violet { box-shadow: 0 0 15px rgba(139, 92, 246, 0.35); }
+  </style>
+</head>
+<body class="bg-[#0B0F17] text-slate-200 font-sans min-h-screen antialiased selection:bg-cyan-500 selection:text-white">
+
+  <div class="fixed inset-0 overflow-hidden pointer-events-none z-0">
+    <div class="absolute -top-40 -left-40 w-96 h-96 bg-blue-600/15 rounded-full blur-3xl"></div>
+    <div class="absolute top-1/3 -right-40 w-96 h-96 bg-violet-600/15 rounded-full blur-3xl"></div>
+    <div class="absolute -bottom-40 left-1/3 w-96 h-96 bg-cyan-600/10 rounded-full blur-3xl"></div>
+  </div>
+
+  <div class="relative z-10 max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 space-y-8">
+    
+    <!-- Top Header -->
+    <header class="flex flex-col sm:flex-row sm:items-center justify-between gap-6 pb-6 border-b border-slate-800/80">
+      <div class="flex items-center gap-3">
+        <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-600 to-cyan-400 flex items-center justify-center text-white shadow-lg glow-cyan">
+          <i class="fa-solid fa-rocket text-lg"></i>
+        </div>
+        <div>
+          <h1 class="text-2xl sm:text-3xl font-extrabold tracking-tight bg-gradient-to-r from-white via-slate-100 to-slate-400 bg-clip-text text-transparent">
+            Job Tracker Hub
+          </h1>
+          <p class="text-xs sm:text-sm text-slate-400">Monitoring &amp; AI Auto-Apply Assistant OLAN</p>
+        </div>
+      </div>
+
+      <div class="flex flex-wrap items-center gap-3">
+        <button onclick="openAutoApplyModal()" class="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white text-xs sm:text-sm font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg glow-violet transition-all duration-300 active:scale-95">
+          <i class="fa-solid fa-wand-magic-sparkles text-sm"></i>
+          <span>Auto Apply AI</span>
+        </button>
+
+        <button onclick="openModal()" class="px-5 py-2.5 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white text-xs sm:text-sm font-semibold rounded-xl flex items-center justify-center gap-2 shadow-lg glow-blue transition-all duration-300 active:scale-95">
+          <i class="fa-solid fa-plus text-sm"></i>
+          <span>Tambah Manual</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- Ringkasan Statistik -->
+    <section class="grid grid-cols-2 lg:grid-cols-4 gap-4">
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 glass-card-hover">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-400">Total Apply</span>
+          <div class="w-8 h-8 rounded-lg bg-blue-500/10 text-blue-400 flex items-center justify-center text-sm border border-blue-500/20">
+            <i class="fa-solid fa-paper-plane"></i>
+          </div>
+        </div>
+        <div id="statTotal" class="text-3xl font-extrabold text-white mt-3">0</div>
+        <span class="text-[11px] text-slate-500 mt-1 block">Seluruh riwayat pengiriman</span>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 glass-card-hover">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-purple-400">Tahap Interview</span>
+          <div class="w-8 h-8 rounded-lg bg-purple-500/10 text-purple-400 flex items-center justify-center text-sm border border-purple-500/20">
+            <i class="fa-solid fa-comments"></i>
+          </div>
+        </div>
+        <div id="statInterview" class="text-3xl font-extrabold text-purple-300 mt-3">0</div>
+        <span class="text-[11px] text-slate-500 mt-1 block">HR &amp; User Interview</span>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 glass-card-hover">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-emerald-400">Diterima</span>
+          <div class="w-8 h-8 rounded-lg bg-emerald-500/10 text-emerald-400 flex items-center justify-center text-sm border border-emerald-500/20">
+            <i class="fa-solid fa-trophy"></i>
+          </div>
+        </div>
+        <div id="statAccepted" class="text-3xl font-extrabold text-emerald-400 mt-3">0</div>
+        <span class="text-[11px] text-slate-500 mt-1 block">Offering &amp; Acceptance</span>
+      </div>
+
+      <div class="glass-card rounded-2xl p-5 relative overflow-hidden transition-all duration-300 glass-card-hover">
+        <div class="flex items-center justify-between">
+          <span class="text-xs font-semibold uppercase tracking-wider text-rose-400">Ditolak / Auto-Expired</span>
+          <div class="w-8 h-8 rounded-lg bg-rose-500/10 text-rose-400 flex items-center justify-center text-sm border border-rose-500/20">
+            <i class="fa-solid fa-circle-xmark"></i>
+          </div>
+        </div>
+        <div id="statRejected" class="text-3xl font-extrabold text-rose-400 mt-3">0</div>
+        <span class="text-[11px] text-slate-500 mt-1 block">&gt; 2 minggu tidak di-update</span>
+      </div>
+    </section>
+
+    <!-- Toolbar Filter & Pencarian -->
+    <section class="glass-card rounded-2xl p-4 flex flex-col sm:flex-row gap-4 items-center justify-between">
+      <div class="relative w-full sm:w-80">
+        <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+        <input type="text" id="searchInput" oninput="filterData()" placeholder="Cari perusahaan / posisi..." class="w-full bg-slate-900/80 text-white pl-9 pr-4 py-2.5 rounded-xl border border-slate-700/80 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none text-xs transition placeholder:text-slate-500">
+      </div>
+
+      <div class="relative w-full sm:w-56">
+        <select id="statusFilter" onchange="filterData()" class="w-full bg-slate-900/80 text-slate-200 px-3.5 py-2.5 rounded-xl border border-slate-700/80 focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none text-xs transition cursor-pointer">
+          <option value="">Semua Status Progres</option>
+          <option value="Terkirim">Terkirim</option>
+          <option value="Screening CV">Screening CV</option>
+          <option value="Psikotes">Psikotes</option>
+          <option value="Interview HR">Interview HR</option>
+          <option value="Interview User">Interview User</option>
+          <option value="Offering">Offering</option>
+          <option value="Diterima">Diterima</option>
+          <option value="Ditolak">Ditolak</option>
+        </select>
+      </div>
+    </section>
+
+    <!-- Tabel Data -->
+    <section class="glass-card rounded-2xl overflow-hidden border border-slate-800">
+      <div class="overflow-x-auto">
+        <table class="w-full text-left border-collapse">
+          <thead>
+            <tr class="bg-slate-900/90 border-b border-slate-800 text-[11px] font-bold uppercase tracking-wider text-slate-400">
+              <th class="py-4 px-4 text-center w-12">#</th>
+              <th class="py-4 px-4">Tanggal Apply</th>
+              <th class="py-4 px-4">Perusahaan &amp; Posisi</th>
+              <th class="py-4 px-4">Portal Apply</th>
+              <th class="py-4 px-4">Status Progres</th>
+              <th class="py-4 px-4 text-center w-24">Aksi</th>
+            </tr>
+          </thead>
+          <tbody id="tableBody" class="divide-y divide-slate-800/60 text-xs">
+            <tr>
+              <td colspan="6" class="text-center py-12 text-slate-400">
+                <i class="fa-solid fa-atom fa-spin text-3xl text-cyan-400 mb-3"></i>
+                <p class="font-medium text-slate-300">Memuat data PUNYA OLAN...</p>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 1: FORM MANUAL (EXISTING)                           -->
+  <!-- ========================================================= -->
+  <div id="modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-md hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="glass-card bg-[#111827] rounded-2xl w-full max-w-lg border border-slate-700 shadow-2xl overflow-hidden my-8 transform transition-all">
+      
+      <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/50">
+        <div class="flex items-center gap-2.5">
+          <div class="w-2 h-2 rounded-full bg-cyan-400 glow-cyan"></div>
+          <h3 id="modalTitle" class="font-bold text-sm text-white uppercase tracking-wider">Form Lamaran Kerja</h3>
+        </div>
+        <button onclick="closeModal()" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <form id="appForm" onsubmit="saveData(event)" class="p-6 space-y-4">
+        <input type="hidden" id="rowIndex">
+        
+        <div class="grid grid-cols-2 gap-4">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Tanggal Apply</label>
+            <input type="date" id="tanggal" required class="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none text-xs">
+          </div>
+          <div>
+            <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Apply Via</label>
+            <input type="text" id="applyVia" required placeholder="LinkedIn, JobStreet, Email..." class="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none text-xs placeholder:text-slate-600">
+          </div>
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Nama Perusahaan</label>
+          <input type="text" id="perusahaan" required placeholder="Contoh: PT Yamaha Music" class="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none text-xs placeholder:text-slate-600">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Posisi Jabatan</label>
+          <input type="text" id="posisi" required placeholder="Contoh: Internal Audit Staff" class="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none text-xs placeholder:text-slate-600">
+        </div>
+
+        <div>
+          <label class="block text-[11px] font-bold text-slate-400 uppercase tracking-wider mb-1">Status Progres</label>
+          <select id="status" class="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl focus:border-cyan-500 focus:ring-1 focus:ring-cyan-500 outline-none text-xs">
+            <option value="Terkirim">Terkirim</option>
+            <option value="Screening CV">Screening CV</option>
+            <option value="Psikotes">Psikotes</option>
+            <option value="Interview HR">Interview HR</option>
+            <option value="Interview User">Interview User</option>
+            <option value="Offering">Offering</option>
+            <option value="Diterima">Diterima</option>
+            <option value="Ditolak">Ditolak</option>
+          </select>
+        </div>
+
+        <div class="flex justify-end gap-3 pt-4 border-t border-slate-800">
+          <button type="button" onclick="closeModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">Batal</button>
+          <button type="submit" id="saveBtn" class="px-5 py-2 bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-500 hover:to-cyan-400 text-white rounded-xl text-xs font-semibold shadow-md glow-blue transition">Simpan Data</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+  <!-- ========================================================= -->
+  <!-- MODAL 2: AUTO APPLY AI ASSISTANT (FITUR BARU)             -->
+  <!-- ========================================================= -->
+  <div id="autoApplyModal" class="fixed inset-0 bg-slate-950/85 backdrop-blur-md hidden flex items-center justify-center p-4 z-50 overflow-y-auto">
+    <div class="glass-card bg-[#111827] rounded-2xl w-full max-w-2xl border border-violet-500/30 shadow-2xl overflow-hidden my-8 transform transition-all">
+      
+      <!-- Modal Header -->
+      <div class="px-6 py-4 border-b border-slate-800 flex justify-between items-center bg-slate-900/70">
+        <div class="flex items-center gap-2.5">
+          <div class="w-7 h-7 rounded-lg bg-violet-500/20 text-violet-400 flex items-center justify-center border border-violet-500/30">
+            <i class="fa-solid fa-wand-magic-sparkles text-xs"></i>
+          </div>
+          <div>
+            <h3 class="font-bold text-sm text-white uppercase tracking-wider">AI Auto-Apply Assistant</h3>
+            <p class="text-[11px] text-slate-400">Tempel info lowongan &rarr; AI susun email &rarr; Kirim via Gmail + CV Drive</p>
+          </div>
+        </div>
+        <button onclick="closeAutoApplyModal()" class="w-8 h-8 rounded-lg bg-slate-800 text-slate-400 hover:text-white flex items-center justify-center transition">
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
+
+      <div class="p-6 space-y-5">
+        <!-- Step 1: Input Teks Lowongan -->
+        <div id="stepInputJob" class="space-y-4">
+          <div>
+            <label class="block text-[11px] font-bold text-violet-300 uppercase tracking-wider mb-1.5">
+              1. Tempel Postingan / Info Lowongan (LinkedIn, Instagram, WA, dll)
+            </label>
+            <textarea id="rawJobText" rows="6" placeholder="Contoh: PT ABC Indonesia membuka lowongan Admin Produksi. Penempatan Karawang. Kirim CV ke recruitment@abc.co.id dengan subjek Admin Produksi..." class="w-full bg-slate-900/90 border border-slate-700 text-white p-3.5 rounded-xl focus:border-violet-500 focus:ring-1 focus:ring-violet-500 outline-none text-xs leading-relaxed placeholder:text-slate-600"></textarea>
+          </div>
+
+          <div class="flex items-center justify-between bg-slate-900/60 border border-slate-800 rounded-xl px-4 py-2.5 text-[11px] text-slate-400">
+            <span class="flex items-center gap-2">
+              <i class="fa-solid fa-file-pdf text-rose-400 text-sm"></i>
+              <span>Lampiran CV otomatis diambil dari Google Drive</span>
+            </span>
+            <span class="text-emerald-400 font-semibold"><i class="fa-solid fa-circle-check mr-1"></i>Siap</span>
+          </div>
+
+          <div class="flex justify-end gap-3 pt-2">
+            <button type="button" onclick="closeAutoApplyModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">Batal</button>
+            <button type="button" id="btnAnalyzeJob" onclick="analyzeJobPost()" class="px-5 py-2.5 bg-gradient-to-r from-violet-600 to-fuchsia-600 hover:from-violet-500 hover:to-fuchsia-500 text-white rounded-xl text-xs font-semibold shadow-md glow-violet flex items-center gap-2 transition">
+              <i class="fa-solid fa-robot"></i>
+              <span>Analisis &amp; Buat Draf Email</span>
+            </button>
+          </div>
+        </div>
+
+        <!-- Step 2: Preview & Edit Email Sebelum Kirim -->
+        <div id="stepPreviewEmail" class="hidden space-y-4">
+          <div class="flex items-center justify-between border-b border-slate-800 pb-2">
+            <span class="text-[11px] font-bold text-emerald-400 uppercase tracking-wider">
+              <i class="fa-solid fa-check-double mr-1"></i> 2. Preview &amp; Edit Draf Lamaran
+            </span>
+            <button type="button" onclick="backToStepInput()" class="text-[11px] text-slate-400 hover:text-white underline">
+              &larr; Ubah teks lowongan
+            </button>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Perusahaan (Untuk Tracking)</label>
+              <input type="text" id="aiPerusahaan" class="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl focus:border-cyan-500 outline-none text-xs">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Posisi (Untuk Tracking)</label>
+              <input type="text" id="aiPosisi" class="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl focus:border-cyan-500 outline-none text-xs">
+            </div>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">To (Email HRD / Recruitment) *</label>
+              <input type="email" id="aiEmailTujuan" required placeholder="hrd@perusahaan.com" class="w-full bg-slate-900 border border-slate-700 text-cyan-300 font-medium px-3 py-2 rounded-xl focus:border-cyan-500 outline-none text-xs">
+            </div>
+            <div>
+              <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Subject Email *</label>
+              <input type="text" id="aiSubjek" required class="w-full bg-slate-900 border border-slate-700 text-white px-3 py-2 rounded-xl focus:border-cyan-500 outline-none text-xs">
+            </div>
+          </div>
+
+          <div>
+            <label class="block text-[10px] font-bold text-slate-400 uppercase tracking-wider mb-1">Isi Email Lamaran (Bisa diedit sebelum kirim)</label>
+            <textarea id="aiBodyEmail" rows="8" class="w-full bg-slate-900 border border-slate-700 text-slate-200 p-3.5 rounded-xl focus:border-cyan-500 outline-none text-xs leading-relaxed"></textarea>
+          </div>
+
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-3 border-t border-slate-800">
+            <span class="text-[11px] text-slate-400">
+              <i class="fa-solid fa-paperclip text-cyan-400 mr-1"></i> Lampiran: <strong class="text-slate-200">CV Google Drive.pdf</strong>
+            </span>
+            <div class="flex justify-end gap-2">
+              <button type="button" onclick="closeAutoApplyModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-xs font-semibold transition">Batal</button>
+              <button type="button" id="btnSendAutoApply" onclick="submitAutoApply()" class="px-5 py-2.5 bg-gradient-to-r from-emerald-600 to-teal-500 hover:from-emerald-500 hover:to-teal-400 text-white rounded-xl text-xs font-bold shadow-lg flex items-center gap-2 transition">
+                <i class="fa-solid fa-paper-plane"></i>
+                <span>Kirim Lamaran &amp; Catat</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+
+  <script>
+    let rawData = [];
+
+    window.onload = function() {
+      loadData();
+    };
+
+    function loadData() {
+      document.getElementById('tableBody').innerHTML = `
+        <tr>
+          <td colspan="6" class="text-center py-12 text-slate-400">
+            <i class="fa-solid fa-atom fa-spin text-3xl text-cyan-400 mb-3"></i>
+            <p class="font-medium text-slate-300">Memuat data PUNYA OLAN...</p>
+          </td>
+        </tr>`;
+
+      google.script.run.withSuccessHandler(function(data) {
+        rawData = data || [];
+        renderTable(rawData);
+        updateStats(rawData);
+      }).getApplications();
+    }
+
+    function renderTable(data) {
+      const tbody = document.getElementById('tableBody');
+      if (data.length === 0) {
+        tbody.innerHTML = `
+          <tr>
+            <td colspan="6" class="text-center py-12 text-slate-500">
+              <i class="fa-regular fa-folder-open text-3xl mb-2 text-slate-600 block"></i>
+              Belum ada data lamaran. Gunakan <strong>Auto Apply AI</strong> atau <strong>Tambah Manual</strong> di atas.
+            </td>
+          </tr>`;
+        return;
+      }
+
+      tbody.innerHTML = data.map((item, index) => `
+        <tr class="hover:bg-slate-800/40 transition duration-150">
+          <td class="py-4 px-4 text-center font-mono text-xs text-slate-500">${index + 1}</td>
+          <td class="py-4 px-4 whitespace-nowrap text-slate-300 font-mono text-xs">${item.tanggal || '-'}</td>
+          <td class="py-4 px-4">
+            <div class="font-bold text-white text-sm">${item.perusahaan}</div>
+            <div class="text-slate-400 text-xs font-medium">${item.posisi}</div>
+          </td>
+          <td class="py-4 px-4">
+            <span class="inline-flex items-center px-2.5 py-1 rounded-md text-[11px] font-medium bg-slate-800 text-slate-300 border border-slate-700">
+              <i class="fa-solid ${item.applyVia.toLowerCase() === 'email' ? 'fa-envelope text-violet-400' : 'fa-globe text-cyan-400'} mr-1.5 text-[10px]"></i> ${item.applyVia}
+            </span>
+          </td>
+          <td class="py-4 px-4">${getStatusBadge(item.status)}</td>
+          <td class="py-4 px-4 text-center whitespace-nowrap">
+            <div class="flex items-center justify-center space-x-1">
+              <button onclick="editItem(${item.rowIndex})" class="w-7 h-7 rounded-lg bg-blue-500/10 hover:bg-blue-500/20 text-blue-400 flex items-center justify-center transition border border-blue-500/20" title="Edit">
+                <i class="fa-solid fa-pen-to-square"></i>
+              </button>
+              <button onclick="deleteItem(${item.rowIndex})" class="w-7 h-7 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 flex items-center justify-center transition border border-rose-500/20" title="Hapus">
+                <i class="fa-solid fa-trash"></i>
+              </button>
+            </div>
+          </td>
+        </tr>
+      `).join('');
+    }
+
+    function getStatusBadge(status) {
+      const styles = {
+        'Terkirim': 'bg-blue-500/10 text-blue-400 border-blue-500/30',
+        'Screening CV': 'bg-cyan-500/10 text-cyan-400 border-cyan-500/30',
+        'Psikotes': 'bg-amber-500/10 text-amber-400 border-amber-500/30',
+        'Interview HR': 'bg-purple-500/10 text-purple-400 border-purple-500/30',
+        'Interview User': 'bg-fuchsia-500/10 text-fuchsia-400 border-fuchsia-500/30',
+        'Offering': 'bg-emerald-500/10 text-emerald-400 border-emerald-500/30',
+        'Diterima': 'bg-green-500/20 text-green-300 border-green-500/50 font-bold glow-cyan',
+        'Ditolak': 'bg-rose-500/10 text-rose-400 border-rose-500/30'
+      };
+      const badgeStyle = styles[status] || 'bg-slate-800 text-slate-300 border-slate-700';
+      return `<span class="inline-flex items-center px-2.5 py-1 rounded-full text-[11px] font-semibold border ${badgeStyle}">${status}</span>`;
+    }
+
+    function updateStats(data) {
+      document.getElementById('statTotal').innerText = data.length;
+      document.getElementById('statInterview').innerText = data.filter(d => ['Interview HR', 'Interview User'].includes(d.status)).length;
+      document.getElementById('statAccepted').innerText = data.filter(d => d.status === 'Diterima').length;
+      document.getElementById('statRejected').innerText = data.filter(d => d.status === 'Ditolak').length;
+    }
+
+    function filterData() {
+      const search = document.getElementById('searchInput').value.toLowerCase();
+      const status = document.getElementById('statusFilter').value;
+
+      const filtered = rawData.filter(item => {
+        const matchesSearch = item.perusahaan.toLowerCase().includes(search) || item.posisi.toLowerCase().includes(search);
+        const matchesStatus = status === '' || item.status === status;
+        return matchesSearch && matchesStatus;
+      });
+
+      renderTable(filtered);
+    }
+
+    // --- FUNGSI MODAL MANUAL ---
+    function openModal() {
+      document.getElementById('appForm').reset();
+      document.getElementById('rowIndex').value = '';
+      document.getElementById('tanggal').value = new Date().toISOString().split('T')[0];
+      document.getElementById('modalTitle').innerText = 'Tambah Lamaran (PUNYA OLAN)';
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function closeModal() {
+      document.getElementById('modal').classList.add('hidden');
+    }
+
+    function editItem(rowIndex) {
+      const item = rawData.find(d => d.rowIndex === rowIndex);
+      if (!item) return;
+
+      document.getElementById('rowIndex').value = item.rowIndex;
+      document.getElementById('tanggal').value = item.tanggal;
+      document.getElementById('perusahaan').value = item.perusahaan;
+      document.getElementById('posisi').value = item.posisi;
+      document.getElementById('applyVia').value = item.applyVia;
+      document.getElementById('status').value = item.status;
+
+      document.getElementById('modalTitle').innerText = 'Edit Lamaran (PUNYA OLAN)';
+      document.getElementById('modal').classList.remove('hidden');
+    }
+
+    function saveData(e) {
+      e.preventDefault();
+      const saveBtn = document.getElementById('saveBtn');
+      saveBtn.disabled = true;
+      saveBtn.innerText = 'Menyimpan Data...';
+
+      const payload = {
+        rowIndex: document.getElementById('rowIndex').value || '',
+        tanggal: document.getElementById('tanggal').value || '',
+        perusahaan: document.getElementById('perusahaan').value || '',
+        posisi: document.getElementById('posisi').value || '',
+        applyVia: document.getElementById('applyVia').value || '',
+        status: document.getElementById('status').value || 'Terkirim'
+      };
+
+      const onComplete = function(res) {
+        closeModal();
+        saveBtn.innerText = 'Simpan Data';
+        saveBtn.disabled = false;
+        loadData();
+      };
+
+      if (payload.rowIndex) {
+        google.script.run.withSuccessHandler(onComplete).updateApplication(payload);
+      } else {
+        google.script.run.withSuccessHandler(onComplete).addApplication(payload);
+      }
+    }
+
+    function deleteItem(rowIndex) {
+      if (confirm("Yakin ingin menghapus lamaran ini?")) {
+        google.script.run.withSuccessHandler(function() {
+          loadData();
+        }).deleteApplication(rowIndex);
+      }
+    }
+
+    // --- FUNGSI MODAL AUTO APPLY AI ---
+    function openAutoApplyModal() {
+      document.getElementById('rawJobText').value = '';
+      document.getElementById('stepInputJob').classList.remove('hidden');
+      document.getElementById('stepPreviewEmail').classList.add('hidden');
+      document.getElementById('autoApplyModal').classList.remove('hidden');
+    }
+
+    function closeAutoApplyModal() {
+      document.getElementById('autoApplyModal').classList.add('hidden');
+    }
+
+    function backToStepInput() {
+      document.getElementById('stepPreviewEmail').classList.add('hidden');
+      document.getElementById('stepInputJob').classList.remove('hidden');
+    }
+
+    function analyzeJobPost() {
+      const jobText = document.getElementById('rawJobText').value.trim();
+      if (!jobText) {
+        alert("Silakan tempel teks lowongan pekerjaan terlebih dahulu.");
+        return;
+      }
+
+      const btn = document.getElementById('btnAnalyzeJob');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>AI Sedang Membaca Lowongan...</span>`;
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+
+          if (!res.success) {
+            alert("Gagal: " + res.message);
+            return;
+          }
+
+          const d = res.data;
+          document.getElementById('aiPerusahaan').value = d.perusahaan || '';
+          document.getElementById('aiPosisi').value = d.posisi || '';
+          document.getElementById('aiEmailTujuan').value = d.emailTujuan || '';
+          document.getElementById('aiSubjek').value = d.subjek || '';
+          document.getElementById('aiBodyEmail').value = d.bodyEmail || '';
+
+          document.getElementById('stepInputJob').classList.add('hidden');
+          document.getElementById('stepPreviewEmail').classList.remove('hidden');
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+          alert("Terjadi error sistem: " + err.message);
+        })
+        .generateApplicationDraft(jobText);
+    }
+
+    function submitAutoApply() {
+      const emailTujuan = document.getElementById('aiEmailTujuan').value.trim();
+      const subjek = document.getElementById('aiSubjek').value.trim();
+      const bodyEmail = document.getElementById('aiBodyEmail').value.trim();
+      const perusahaan = document.getElementById('aiPerusahaan').value.trim();
+      const posisi = document.getElementById('aiPosisi').value.trim();
+
+      if (!emailTujuan || !emailTujuan.includes('@')) {
+        alert("Mohon masukkan alamat email HRD/recruitment yang valid.");
+        return;
+      }
+      if (!subjek || !bodyEmail) {
+        alert("Subjek dan isi email lamaran tidak boleh kosong.");
+        return;
+      }
+
+      if (!confirm(`Kirim email lamaran ke ${emailTujuan} beserta lampiran CV dari Google Drive?`)) {
+        return;
+      }
+
+      const btn = document.getElementById('btnSendAutoApply');
+      const originalHtml = btn.innerHTML;
+      btn.disabled = true;
+      btn.innerHTML = `<i class="fa-solid fa-spinner fa-spin"></i> <span>Mengirim Email & CV...</span>`;
+
+      const payload = {
+        perusahaan: perusahaan,
+        posisi: posisi,
+        emailTujuan: emailTujuan,
+        subjek: subjek,
+        bodyEmail: bodyEmail
+      };
+
+      google.script.run
+        .withSuccessHandler(function(res) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+
+          if (!res.success) {
+            alert("Gagal: " + res.message);
+            return;
+          }
+
+          alert(res.message);
+          closeAutoApplyModal();
+          loadData();
+        })
+        .withFailureHandler(function(err) {
+          btn.disabled = false;
+          btn.innerHTML = originalHtml;
+          alert("Terjadi error saat mengirim: " + err.message);
+        })
+        .sendAutoApplication(payload);
+    }
+  </script>
+</body>
+</html>
